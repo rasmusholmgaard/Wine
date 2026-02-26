@@ -1,0 +1,126 @@
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import type { TastingNote, CompletedTasting } from '../types/tasting'
+import { EMPTY_TASTING } from '../types/tasting'
+
+// Step question field lists
+export const BLIND_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
+  1: ['wineType', 'clarity', 'concentration', 'co2', 'sediment', 'color', 'rim', 'viscosity'],
+  2: ['noseIntensity', 'fruitCondition', 'ageEstimate', 'primaryAromas', 'secondaryAromas', 'tertiaryAromas', 'condition'],
+  3: ['sweetness', 'tannins', 'acidity', 'alcohol', 'bodyTexture', 'primaryFlavorsText', 'secondaryFlavorsText', 'tertiaryFlavorsText', 'balance', 'finishLength', 'complexity'],
+  4: ['climate', 'grapeGuess', 'countryGuess', 'regionGuess', 'vintageEstimate', 'qualityLevel', 'score', 'personalNotes'],
+  5: ['wineName', 'producer', 'vintage'],
+}
+
+export const OPEN_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
+  1: ['wineType', 'wineName', 'producer', 'vintage', 'countryGuess', 'regionGuess'],
+  2: ['noseIntensity', 'primaryAromas', 'secondaryAromas', 'tertiaryAromas'],
+  3: ['sweetness', 'acidity', 'tannins', 'alcohol', 'balance', 'finishLength', 'complexity'],
+  4: ['score', 'personalNotes'],
+}
+
+export const STEP_NAMES: Record<number, string> = {
+  1: 'Syn',
+  2: 'Næse',
+  3: 'Gane',
+  4: 'Konklusion',
+  5: 'Afsløring',
+}
+
+export const STEP_ICONS: Record<number, string> = {
+  1: '👁️',
+  2: '👃',
+  3: '👅',
+  4: '🏆',
+  5: '🏷️',
+}
+
+export const OPEN_STEP_NAMES: Record<number, string> = {
+  1: 'Vin Info',
+  2: 'Næse',
+  3: 'Gane',
+  4: 'Vurdering',
+}
+
+export const OPEN_STEP_ICONS: Record<number, string> = {
+  1: '🍾',
+  2: '👃',
+  3: '👅',
+  4: '🏆',
+}
+
+interface TastingFlowState {
+  data: TastingNote
+  currentStep: number
+  direction: 'forward' | 'back'
+  setField: (key: keyof TastingNote, value: TastingNote[keyof TastingNote]) => void
+  goNext: () => void
+  goBack: () => void
+  submit: () => CompletedTasting
+  reset: (mode: 'blind' | 'open', easyMode: boolean) => void
+  stepQuestions: Record<number, (keyof TastingNote)[]>
+  totalSteps: number
+}
+
+const TastingContext = createContext<TastingFlowState | null>(null)
+
+function generateId() {
+  return `tasting-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+}
+
+export function TastingProvider({ children }: { children: ReactNode }) {
+  const [data, setData] = useState<TastingNote>({ ...EMPTY_TASTING })
+  const [currentStep, setCurrentStep] = useState(1)
+  const [direction, setDirection] = useState<'forward' | 'back'>('forward')
+
+  const stepQuestions = data.mode === 'open' ? OPEN_STEP_QUESTIONS : BLIND_STEP_QUESTIONS
+  const totalSteps = data.mode === 'open' ? 4 : 5
+
+  const setField = useCallback((key: keyof TastingNote, value: TastingNote[keyof TastingNote]) => {
+    setData((prev) => ({ ...prev, [key]: value }))
+  }, [])
+
+  const goNext = useCallback(() => {
+    setDirection('forward')
+    if (currentStep < totalSteps) {
+      setCurrentStep((s) => s + 1)
+    }
+  }, [currentStep, totalSteps])
+
+  const goBack = useCallback(() => {
+    setDirection('back')
+    if (currentStep > 1) {
+      setCurrentStep((s) => s - 1)
+    }
+  }, [currentStep])
+
+  const submit = useCallback((): CompletedTasting => {
+    const completed: CompletedTasting = {
+      ...data,
+      id: generateId(),
+      createdAt: new Date().toISOString(),
+      isCompleted: true,
+    }
+    return completed
+  }, [data])
+
+  const reset = useCallback((mode: 'blind' | 'open', easyMode: boolean) => {
+    setData({ ...EMPTY_TASTING, mode, easyMode })
+    setCurrentStep(1)
+    setDirection('forward')
+  }, [])
+
+  return (
+    <TastingContext.Provider value={{
+      data, currentStep, direction,
+      setField, goNext, goBack, submit, reset, stepQuestions, totalSteps,
+    }}>
+      {children}
+    </TastingContext.Provider>
+  )
+}
+
+export function useTasting() {
+  const ctx = useContext(TastingContext)
+  if (!ctx) throw new Error('useTasting must be used within TastingProvider')
+  return ctx
+}
