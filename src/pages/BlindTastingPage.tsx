@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTastingFlow } from '../hooks/useTastingFlow'
 import { useApp } from '../context/AppContext'
@@ -18,6 +18,11 @@ export default function BlindTastingPage() {
   } = flow
   const scrollViewRef = useRef<StepScrollViewHandle>(null)
   const [questionNav, setQuestionNav] = useState({ canUp: false, canDown: false })
+  const [isSaving, setIsSaving] = useState(false)
+
+  const handleQuestionChange = useCallback((canUp: boolean, canDown: boolean) => {
+    setQuestionNav({ canUp, canDown })
+  }, [])
 
   function handleBack() {
     if (isAtStart) {
@@ -27,14 +32,16 @@ export default function BlindTastingPage() {
     }
   }
 
-  function handleNext() {
+  async function handleNext() {
     if (scrollViewRef.current && !scrollViewRef.current.isAtLastQuestion()) {
       scrollViewRef.current.scrollNext()
       return
     }
     if (isAtEnd) {
+      if (isSaving) return
+      setIsSaving(true)
       const completed = submit()
-      addTasting(completed)
+      await addTasting(completed)
       navigate(`/tasting/${completed.id}`)
     } else {
       goNext()
@@ -53,7 +60,8 @@ export default function BlindTastingPage() {
       onBack={handleBack}
       onNext={handleNext}
       isLastStep={isAtEnd}
-      nextLabel={currentStep === 5 ? 'Gem & afslør' : undefined}
+      nextLabel={isSaving ? 'Gemmer…' : currentStep === 5 ? 'Gem & afslør' : undefined}
+      nextDisabled={isSaving}
       canScrollUp={questionNav.canUp}
       canScrollDown={questionNav.canDown}
       onScrollUp={() => scrollViewRef.current?.scrollPrev()}
@@ -68,7 +76,7 @@ export default function BlindTastingPage() {
           data={data}
           setField={setField}
           hint={showHints ? <HintChips /> : undefined}
-          onQuestionChange={(canUp, canDown) => setQuestionNav({ canUp, canDown })}
+          onQuestionChange={handleQuestionChange}
         />
       </StepTransition>
     </TastingFlowLayout>

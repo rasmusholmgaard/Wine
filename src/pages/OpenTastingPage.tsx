@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTastingFlow } from '../hooks/useTastingFlow'
 import { useApp } from '../context/AppContext'
@@ -18,7 +18,12 @@ export default function OpenTastingPage() {
 
   const scrollViewRef = useRef<StepScrollViewHandle>(null)
   const [questionNav, setQuestionNav] = useState({ canUp: false, canDown: false })
+  const [isSaving, setIsSaving] = useState(false)
   const fieldKeys = stepQuestions[currentStep] ?? []
+
+  const handleQuestionChange = useCallback((canUp: boolean, canDown: boolean) => {
+    setQuestionNav({ canUp, canDown })
+  }, [])
 
   function handleBack() {
     if (isAtStart) {
@@ -28,14 +33,16 @@ export default function OpenTastingPage() {
     }
   }
 
-  function handleNext() {
+  async function handleNext() {
     if (scrollViewRef.current && !scrollViewRef.current.isAtLastQuestion()) {
       scrollViewRef.current.scrollNext()
       return
     }
     if (isAtEnd) {
+      if (isSaving) return
+      setIsSaving(true)
       const completed = submit()
-      addTasting(completed)
+      await addTasting(completed)
       navigate(`/tasting/${completed.id}`)
     } else {
       goNext()
@@ -51,6 +58,8 @@ export default function OpenTastingPage() {
       onBack={handleBack}
       onNext={handleNext}
       isLastStep={isAtEnd}
+      nextLabel={isSaving ? 'Gemmer…' : undefined}
+      nextDisabled={isSaving}
       canScrollUp={questionNav.canUp}
       canScrollDown={questionNav.canDown}
       onScrollUp={() => scrollViewRef.current?.scrollPrev()}
@@ -64,7 +73,7 @@ export default function OpenTastingPage() {
           fieldKeys={fieldKeys}
           data={data}
           setField={setField}
-          onQuestionChange={(canUp, canDown) => setQuestionNav({ canUp, canDown })}
+          onQuestionChange={handleQuestionChange}
         />
       </StepTransition>
     </TastingFlowLayout>
