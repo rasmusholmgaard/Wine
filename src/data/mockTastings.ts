@@ -4,7 +4,6 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
   {
     id: '1',
     mode: 'blind',
-    easyMode: true,
     createdAt: '2026-02-20T19:30:00Z',
     wineType: 'red',
     clarity: 'Klar',
@@ -48,7 +47,6 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
   {
     id: '2',
     mode: 'blind',
-    easyMode: false,
     createdAt: '2026-02-15T20:00:00Z',
     wineType: 'red',
     clarity: 'Klar',
@@ -95,7 +93,6 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
   {
     id: '3',
     mode: 'blind',
-    easyMode: true,
     createdAt: '2026-02-10T18:45:00Z',
     wineType: 'white',
     clarity: 'Klar',
@@ -138,8 +135,7 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
   },
   {
     id: '4',
-    mode: 'open',
-    easyMode: false,
+    mode: 'blind',
     createdAt: '2026-02-05T21:00:00Z',
     wineType: 'red',
     clarity: 'Klar',
@@ -184,8 +180,7 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
   },
   {
     id: '5',
-    mode: 'open',
-    easyMode: false,
+    mode: 'blind',
     createdAt: '2026-01-28T20:30:00Z',
     wineType: 'white',
     clarity: 'Klar',
@@ -231,8 +226,7 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
   },
   {
     id: '6',
-    mode: 'open',
-    easyMode: false,
+    mode: 'blind',
     createdAt: '2026-01-20T19:00:00Z',
     wineType: 'red',
     clarity: 'Klar',
@@ -279,7 +273,6 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
   {
     id: '7',
     mode: 'blind',
-    easyMode: true,
     createdAt: '2026-01-14T20:00:00Z',
     wineType: 'white',
     clarity: 'Klar',
@@ -322,8 +315,7 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
   },
   {
     id: '8',
-    mode: 'open',
-    easyMode: false,
+    mode: 'blind',
     createdAt: '2026-01-08T21:30:00Z',
     wineType: 'red',
     clarity: 'Klar',
