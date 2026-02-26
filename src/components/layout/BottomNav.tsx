@@ -1,11 +1,10 @@
 import { NavLink } from 'react-router-dom'
-import { Home, BookOpen, User } from 'lucide-react'
+import { Wine, BookOpen } from 'lucide-react'
 import { cn } from '../../lib/utils'
 
 const NAV_ITEMS = [
-  { to: '/', icon: Home, label: 'Hjem' },
-  { to: '/cellar', icon: BookOpen, label: 'Kælder' },
-  { to: '/auth/login', icon: User, label: 'Profil' },
+  { to: '/', icon: Wine, label: 'Tasting' },
+  { to: '/cellar', icon: BookOpen, label: 'Historik' },
 ]
 
 export default function BottomNav() {
