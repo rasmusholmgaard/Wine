@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Eye, EyeOff, Home } from 'lucide-react'
+import { ArrowLeft, EyeOff, Home, Trash2 } from 'lucide-react'
 import AppShell from '../components/layout/AppShell'
 import { useApp } from '../context/AppContext'
 import { cn } from '../lib/utils'
@@ -45,11 +46,67 @@ function getColorDot(color: string, wineType: string): string {
   return '#B05070'
 }
 
+interface DeleteDialogProps {
+  onCancel: () => void
+  onConfirm: () => void
+  isDeleting: boolean
+}
+
+function DeleteDialog({ onCancel, onConfirm, isDeleting }: DeleteDialogProps) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+      style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+      onClick={onCancel}
+    >
+      <div
+        className="w-full max-w-sm mx-4 mb-8 sm:mb-0 bg-cream rounded-card shadow-xl p-6 flex flex-col gap-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex flex-col gap-1.5">
+          <h2 className="font-display text-lg text-charcoal font-semibold">
+            Slet smagning?
+          </h2>
+          <p className="font-body text-vino-sm text-charcoal-soft">
+            Denne smagning vil blive slettet permanent og kan ikke gendannes.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className="w-full py-3.5 rounded-card font-body font-semibold text-vino-base bg-wine-red text-white hover:opacity-90 active:scale-[0.98] transition-[transform,opacity] duration-200 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine-red focus-visible:ring-offset-2"
+          >
+            {isDeleting ? 'Sletter…' : 'Slet'}
+          </button>
+          <button
+            onClick={onCancel}
+            disabled={isDeleting}
+            className="w-full py-3.5 rounded-card font-body font-semibold text-vino-base bg-cream-deeper text-charcoal-mid hover:bg-cream-dark active:scale-[0.98] transition-[transform,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
+          >
+            Annuller
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function TastingDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { tastings } = useApp()
+  const { tastings, deleteTasting } = useApp()
   const tasting = tastings.find((t) => t.id === id)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  async function handleDelete() {
+    if (!tasting) return
+    setIsDeleting(true)
+    await deleteTasting(tasting.id)
+    navigate('/', { replace: true })
+  }
 
   if (!tasting) {
     return (
@@ -70,7 +127,7 @@ export default function TastingDetailPage() {
     ? tasting.wineName
     : tasting.grapeGuess || 'Blind smagning'
 
-  const hasReveal = tasting.mode === 'blind' && (tasting.wineName || tasting.producer || tasting.vintage)
+  const hasReveal = tasting.wineName || tasting.producer || tasting.vintage
 
   return (
     <AppShell>
@@ -79,12 +136,20 @@ export default function TastingDetailPage() {
         className="relative px-5 pt-12 pb-6"
         style={{ background: 'var(--cream-dark)', boxShadow: 'var(--shadow-vino)' }}
       >
-        <button
-          onClick={() => navigate(-1)}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-cream text-charcoal-mid hover:bg-cream-deeper active:scale-[0.94] transition-[transform,background-color] duration-200 mb-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage"
-        >
-          <ArrowLeft size={18} strokeWidth={2} />
-        </button>
+        <div className="flex items-center justify-between mb-5">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-cream text-charcoal-mid hover:bg-cream-deeper active:scale-[0.94] transition-[transform,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage"
+          >
+            <ArrowLeft size={18} strokeWidth={2} />
+          </button>
+          <button
+            onClick={() => setShowDeleteDialog(true)}
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-cream text-charcoal-soft hover:bg-wine-red/10 hover:text-wine-red active:scale-[0.94] transition-[transform,background-color,color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine-red"
+          >
+            <Trash2 size={16} strokeWidth={2} />
+          </button>
+        </div>
 
         <div className="flex items-start gap-4">
           <div
@@ -102,13 +167,11 @@ export default function TastingDetailPage() {
               <span
                 className={cn(
                   'inline-flex items-center gap-1 text-vino-xs font-body font-medium px-2 py-1 rounded-chip',
-                  tasting.mode === 'blind'
-                    ? 'bg-wine-red/10 text-wine-red'
-                    : 'bg-sage/10 text-sage-dark',
+                  'bg-wine-red/10 text-wine-red',
                 )}
               >
-                {tasting.mode === 'blind' ? <EyeOff size={11} /> : <Eye size={11} />}
-                {tasting.mode === 'blind' ? 'Blind' : 'Åben'}
+                <EyeOff size={11} />
+                Blind
               </span>
               <span className="text-vino-xs text-charcoal-soft font-body">{formatDate(tasting.createdAt)}</span>
             </div>
@@ -203,6 +266,14 @@ export default function TastingDetailPage() {
           Gå til forsiden
         </button>
       </div>
+
+      {showDeleteDialog && (
+        <DeleteDialog
+          onCancel={() => setShowDeleteDialog(false)}
+          onConfirm={handleDelete}
+          isDeleting={isDeleting}
+        />
+      )}
     </AppShell>
   )
 }

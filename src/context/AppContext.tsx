@@ -7,6 +7,7 @@ interface AppContextValue {
   tastings: CompletedTasting[]
   isLoading: boolean
   addTasting: (t: CompletedTasting) => Promise<void>
+  deleteTasting: (id: string) => Promise<void>
 }
 
 const AppContext = createContext<AppContextValue | null>(null)
@@ -46,8 +47,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setTastings((prev) => [t, ...prev])
   }
 
+  async function deleteTasting(id: string) {
+    const { error } = await supabase.from('tastings').delete().eq('id', id)
+    if (error) throw error
+    setTastings((prev) => prev.filter((t) => t.id !== id))
+  }
+
   return (
-    <AppContext.Provider value={{ tastings, isLoading, addTasting }}>
+    <AppContext.Provider value={{ tastings, isLoading, addTasting, deleteTasting }}>
       {children}
     </AppContext.Provider>
   )

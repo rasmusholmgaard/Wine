@@ -4,7 +4,7 @@ import StepAppearance, { getAppearanceTitle } from './StepAppearance'
 import StepNose, { getNoseTitle } from './StepNose'
 import StepPalate, { getPalateTitle } from './StepPalate'
 import StepConclusions, { getConclusionsTitle } from './StepConclusions'
-import StepWineInfo, { getWineInfoTitle } from './StepWineInfo'
+import StepWineInfo from './StepWineInfo'
 
 export interface StepScrollViewHandle {
   scrollNext: () => void
@@ -39,7 +39,6 @@ function getFieldTitle(step: number, fieldKey: keyof TastingNote): string {
 
 interface StepScrollViewProps {
   step: number
-  mode: 'blind' | 'open'
   fieldKeys: (keyof TastingNote)[]
   data: TastingNote
   setField: (key: keyof TastingNote, value: TastingNote[keyof TastingNote]) => void
@@ -48,7 +47,7 @@ interface StepScrollViewProps {
 }
 
 const StepScrollView = forwardRef<StepScrollViewHandle, StepScrollViewProps>(function StepScrollView(
-  { step, mode, fieldKeys, data, setField, hint, onQuestionChange }: StepScrollViewProps,
+  { step, fieldKeys, data, setField, hint, onQuestionChange }: StepScrollViewProps,
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -130,10 +129,7 @@ const StepScrollView = forwardRef<StepScrollViewHandle, StepScrollViewProps>(fun
   }
 
   function renderField(fieldKey: keyof TastingNote, sf: (key: keyof TastingNote, value: TastingNote[keyof TastingNote]) => void) {
-    if (mode === 'open' && step === 1) {
-      return <StepWineInfo fieldKey={fieldKey} data={data} setField={sf} />
-    }
-    if (mode === 'blind' && step === 5) {
+    if (step === 5) {
       return <StepWineInfo fieldKey={fieldKey} data={data} setField={sf} />
     }
     switch (step) {
@@ -146,8 +142,7 @@ const StepScrollView = forwardRef<StepScrollViewHandle, StepScrollViewProps>(fun
   }
 
   function getTitle(fieldKey: keyof TastingNote): string {
-    if (mode === 'open' && step === 1) return getWineInfoTitle(fieldKey)
-    if (mode === 'blind' && step === 5) return getRevealTitle(fieldKey)
+    if (step === 5) return getRevealTitle(fieldKey)
     return getFieldTitle(step, fieldKey)
   }
 

@@ -11,13 +11,6 @@ export const BLIND_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
   5: ['wineName', 'producer', 'vintage'],
 }
 
-export const OPEN_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
-  1: ['wineType', 'wineName', 'producer', 'vintage', 'countryGuess', 'regionGuess'],
-  2: ['noseIntensity', 'primaryAromas', 'secondaryAromas', 'tertiaryAromas'],
-  3: ['sweetness', 'acidity', 'tannins', 'alcohol', 'balance', 'finishLength', 'complexity'],
-  4: ['score', 'personalNotes'],
-}
-
 export const STEP_NAMES: Record<number, string> = {
   1: 'Syn',
   2: 'Næse',
@@ -34,20 +27,6 @@ export const STEP_ICONS: Record<number, string> = {
   5: '🏷️',
 }
 
-export const OPEN_STEP_NAMES: Record<number, string> = {
-  1: 'Vin Info',
-  2: 'Næse',
-  3: 'Gane',
-  4: 'Vurdering',
-}
-
-export const OPEN_STEP_ICONS: Record<number, string> = {
-  1: '🍾',
-  2: '👃',
-  3: '👅',
-  4: '🏆',
-}
-
 interface TastingFlowState {
   data: TastingNote
   currentStep: number
@@ -56,7 +35,7 @@ interface TastingFlowState {
   goNext: () => void
   goBack: () => void
   submit: () => CompletedTasting
-  reset: (mode: 'blind' | 'open', easyMode: boolean) => void
+  reset: () => void
   stepQuestions: Record<number, (keyof TastingNote)[]>
   totalSteps: number
 }
@@ -72,8 +51,8 @@ export function TastingProvider({ children }: { children: ReactNode }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [direction, setDirection] = useState<'forward' | 'back'>('forward')
 
-  const stepQuestions = data.mode === 'open' ? OPEN_STEP_QUESTIONS : BLIND_STEP_QUESTIONS
-  const totalSteps = data.mode === 'open' ? 4 : 5
+  const stepQuestions = BLIND_STEP_QUESTIONS
+  const totalSteps = 5
 
   const setField = useCallback((key: keyof TastingNote, value: TastingNote[keyof TastingNote]) => {
     setData((prev) => ({ ...prev, [key]: value }))
@@ -84,7 +63,7 @@ export function TastingProvider({ children }: { children: ReactNode }) {
     if (currentStep < totalSteps) {
       setCurrentStep((s) => s + 1)
     }
-  }, [currentStep, totalSteps])
+  }, [currentStep])
 
   const goBack = useCallback(() => {
     setDirection('back')
@@ -103,8 +82,8 @@ export function TastingProvider({ children }: { children: ReactNode }) {
     return completed
   }, [data])
 
-  const reset = useCallback((mode: 'blind' | 'open', easyMode: boolean) => {
-    setData({ ...EMPTY_TASTING, mode, easyMode })
+  const reset = useCallback(() => {
+    setData({ ...EMPTY_TASTING })
     setCurrentStep(1)
     setDirection('forward')
   }, [])

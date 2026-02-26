@@ -4,9 +4,7 @@ import { AppProvider } from './context/AppContext'
 import { TastingProvider } from './context/TastingContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import HomePage from './pages/HomePage'
-import ModeSelectionPage from './pages/ModeSelectionPage'
 import BlindTastingPage from './pages/BlindTastingPage'
-import OpenTastingPage from './pages/OpenTastingPage'
 import TastingDetailPage from './pages/TastingDetailPage'
 import CellarPage from './pages/CellarPage'
 import CellarCountryPage from './pages/CellarCountryPage'
@@ -33,26 +31,10 @@ export default function App() {
                 }
               />
               <Route
-                path="/tasting/new"
-                element={
-                  <ProtectedRoute>
-                    <ModeSelectionPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/tasting/blind"
                 element={
                   <ProtectedRoute>
                     <BlindTastingPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/tasting/open"
-                element={
-                  <ProtectedRoute>
-                    <OpenTastingPage />
                   </ProtectedRoute>
                 }
               />

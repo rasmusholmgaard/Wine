@@ -6,7 +6,6 @@ import TastingFlowLayout from '../components/layout/TastingFlowLayout'
 import StepTransition from '../components/layout/StepTransition'
 import StepIntroScreen from '../components/layout/StepIntroScreen'
 import StepScrollView, { type StepScrollViewHandle } from '../components/tasting/StepScrollView'
-import HintChips from '../components/tasting/HintChips'
 import ExitTastingDialog from '../components/layout/ExitTastingDialog'
 
 export default function BlindTastingPage() {
@@ -60,7 +59,6 @@ export default function BlindTastingPage() {
   }
 
   const fieldKeys = stepQuestions[currentStep] ?? []
-  const showHints = data.mode === 'blind' && data.easyMode && currentStep >= 2
 
   if (showIntro) {
     return (
@@ -77,7 +75,7 @@ export default function BlindTastingPage() {
         {showExitDialog && (
           <ExitTastingDialog
             onStay={() => setShowExitDialog(false)}
-            onExit={() => navigate('/tasting/new')}
+            onExit={() => navigate('/')}
           />
         )}
       </>
@@ -105,11 +103,9 @@ export default function BlindTastingPage() {
           <StepScrollView
             ref={scrollViewRef}
             step={currentStep}
-            mode={data.mode}
             fieldKeys={fieldKeys}
             data={data}
             setField={setField}
-            hint={showHints ? <HintChips /> : undefined}
             onQuestionChange={handleQuestionChange}
           />
         </StepTransition>
@@ -117,7 +113,7 @@ export default function BlindTastingPage() {
       {showExitDialog && (
         <ExitTastingDialog
           onStay={() => setShowExitDialog(false)}
-          onExit={() => navigate('/tasting/new')}
+          onExit={() => navigate('/')}
         />
       )}
     </>

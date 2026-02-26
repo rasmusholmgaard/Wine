@@ -101,4 +101,4 @@ Alcohol should be low to high. The input right now is for body/texture, which is
 We also need input for primære, sekundære, tertiær smag. There are too many options to have it as a picker. 
 
 
-I really like the overview when you complete a guess, however, we should also have a step for the reveal of the wine. Maybe you can scan the wine or input the exact information so it is saved with your guess
+I really like the overview when you complete a guess, however, we should also have a step for the reveal of the wine. Maybe you can scan the wine or input the exact information so it is saved with your guessog 

@@ -1,7 +1,6 @@
 export interface TastingNote {
   id: string
-  mode: 'blind' | 'open'
-  easyMode: boolean
+  mode: 'blind'
   createdAt: string
   wineType: 'white' | 'red' | 'rosé' | ''
 
@@ -62,7 +61,6 @@ export type CompletedTasting = TastingNote & {
 export const EMPTY_TASTING: TastingNote = {
   id: '',
   mode: 'blind',
-  easyMode: false,
   createdAt: '',
   wineType: '',
   clarity: '',
