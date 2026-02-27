@@ -13,6 +13,7 @@ const SWEETNESS_OPTIONS = ['Knastør', 'Tør', 'Halvtør', 'Sød']
 const TANNIN_OPTIONS = ['Lav', 'Medium-', 'Medium', 'Medium+', 'Høj']
 const ACIDITY_OPTIONS = ['Lav', 'Medium-', 'Medium', 'Medium+', 'Høj']
 const ALCOHOL_OPTIONS = ['Lav', 'Medium', 'Høj']
+const BODY_OPTIONS = ['Let', 'Medium', 'Fyldig', 'Cremet', 'Rund']
 const FINISH_OPTIONS = ['Kort', 'Medium', 'Lang']
 const COMPLEXITY_OPTIONS = ['Lav', 'Medium', 'Høj']
 const BALANCE_OPTIONS = ['Ja', 'Nej']
@@ -49,14 +50,7 @@ export default function StepPalate({ fieldKey, data, setField }: StepPalateProps
       return <SegmentedControl options={ALCOHOL_OPTIONS} value={data.alcohol || null} onChange={(v) => setField('alcohol', v)} />
 
     case 'bodyTexture':
-      return (
-        <TextInput
-          value={data.bodyTexture}
-          onChange={(v) => setField('bodyTexture', v)}
-          placeholder="F.eks. silkeblød, elegant, lang..."
-          autoFocus
-        />
-      )
+      return <SegmentedControl options={BODY_OPTIONS} value={data.bodyTexture || null} onChange={(v) => setField('bodyTexture', v)} />
 
     case 'primaryFlavorsText':
       return (

@@ -16,7 +16,7 @@ export interface StepScrollViewHandle {
 const AUTO_SCROLL_FIELDS = new Set<keyof TastingNote>([
   'wineType', 'clarity', 'concentration', 'co2', 'sediment', 'color', 'rim', 'viscosity',
   'condition', 'noseIntensity', 'fruitCondition', 'ageEstimate',
-  'sweetness', 'tannins', 'acidity', 'alcohol', 'balance', 'finishLength', 'complexity',
+  'sweetness', 'tannins', 'acidity', 'alcohol', 'bodyTexture', 'balance', 'finishLength', 'complexity',
   'climate', 'countryGuess',
 ])
 
