@@ -4,6 +4,7 @@ import { ArrowLeft, EyeOff, Home, Trash2 } from 'lucide-react'
 import AppShell from '../components/layout/AppShell'
 import { useApp } from '../context/AppContext'
 import { cn } from '../lib/utils'
+import StarRating from '../components/primitives/StarRating'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -177,11 +178,11 @@ export default function TastingDetailPage() {
             </div>
           </div>
           {tasting.score != null && (
-            <div
-              className="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center"
-              style={{ background: 'var(--cream)' }}
-            >
-              <span className="font-display text-vino-xl font-semibold text-wine-red">{tasting.score}</span>
+            <div className="flex-shrink-0 flex flex-col items-center gap-1.5">
+              <span className="font-display text-vino-2xl font-semibold text-wine-red leading-none">
+                {tasting.score.toFixed(1)}
+              </span>
+              <StarRating score={tasting.score} size={14} />
             </div>
           )}
         </div>

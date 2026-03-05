@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import type { CompletedTasting } from '../../types/tasting'
+import StarRating from '../primitives/StarRating'
 
 interface WineCardProps {
   tasting: CompletedTasting
@@ -60,13 +61,11 @@ export default function WineCard({ tasting }: WineCardProps) {
 
       {/* Score */}
       {tasting.score != null && (
-        <div
-          className="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center"
-          style={{ background: 'var(--cream-deeper)' }}
-        >
-          <span className="font-display text-vino-sm font-semibold text-wine-red">
-            {tasting.score}
+        <div className="flex-shrink-0 flex flex-col items-center gap-1">
+          <span className="font-display text-vino-base font-semibold text-wine-red leading-none">
+            {tasting.score.toFixed(1)}
           </span>
+          <StarRating score={tasting.score} size={10} />
         </div>
       )}
     </button>

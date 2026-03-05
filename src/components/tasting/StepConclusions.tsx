@@ -4,6 +4,7 @@ import SegmentedControl from '../primitives/SegmentedControl'
 import TagChipGroup from '../primitives/TagChipGroup'
 import TextInput from '../primitives/TextInput'
 import ScoreInput from '../primitives/ScoreInput'
+import GrapeAutocomplete from '../primitives/GrapeAutocomplete'
 import { COUNTRIES, REGIONS } from '../../data/regionTaxonomy'
 import { QUALITY_LEVELS } from '../../data/aromaOptions'
 
@@ -41,10 +42,9 @@ export default function StepConclusions({ fieldKey, data, setField }: StepConclu
 
     case 'grapeGuess':
       return (
-        <TextInput
+        <GrapeAutocomplete
           value={data.grapeGuess}
           onChange={(v) => setField('grapeGuess', v)}
-          placeholder="F.eks. Pinot Noir..."
           autoFocus
         />
       )

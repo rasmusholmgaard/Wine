@@ -1,4 +1,9 @@
-import { cn } from '../../lib/utils'
+import { useRef } from 'react'
+import StarRating from './StarRating'
+
+const MIN = 1.0
+const MAX = 5.0
+const TRACK_HEIGHT = 220
 
 interface ScoreInputProps {
   value: number | null
@@ -6,65 +11,122 @@ interface ScoreInputProps {
 }
 
 export default function ScoreInput({ value, onChange }: ScoreInputProps) {
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const n = parseInt(e.target.value, 10)
-    if (isNaN(n)) {
-      onChange(null)
-    } else {
-      onChange(Math.min(100, Math.max(1, n)))
-    }
+  const trackRef = useRef<HTMLDivElement>(null)
+
+  const fillPct = value != null ? ((value - MIN) / (MAX - MIN)) * 100 : 0
+
+  function positionToScore(clientY: number): number {
+    const rect = trackRef.current!.getBoundingClientRect()
+    const pct = 1 - (clientY - rect.top) / rect.height // top = high score
+    const raw = MIN + Math.max(0, Math.min(1, pct)) * (MAX - MIN)
+    return Math.round(raw * 10) / 10
   }
 
-  const scoreColor = value == null
-    ? 'text-charcoal-soft'
-    : value >= 90
-    ? 'text-sage'
-    : value >= 80
-    ? 'text-charcoal'
-    : 'text-charcoal-mid'
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    e.currentTarget.setPointerCapture(e.pointerId)
+    onChange(positionToScore(e.clientY))
+  }
+
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (e.buttons === 0) return
+    onChange(positionToScore(e.clientY))
+  }
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <div className={cn('font-display text-vino-3xl font-semibold transition-[color] duration-200', scoreColor)}>
-        {value ?? '—'}
+    <div className="flex flex-col items-center gap-6 select-none touch-none">
+      {/* Score display */}
+      <div className="flex flex-col items-center gap-2">
+        <span className="font-display text-vino-3xl font-semibold text-wine-red leading-none">
+          {value != null ? value.toFixed(1) : '—'}
+        </span>
+        {value != null ? (
+          <StarRating score={value} size={20} />
+        ) : (
+          <span className="text-vino-sm text-charcoal-soft font-body">Træk for at bedømme</span>
+        )}
       </div>
 
-      <div className="w-full relative">
-        <input
-          type="range"
-          min={50}
-          max={100}
-          value={value ?? 80}
-          onChange={(e) => onChange(parseInt(e.target.value, 10))}
-          className="w-full h-2 rounded-full appearance-none cursor-pointer"
-          style={{
-            background: value != null
-              ? `linear-gradient(to right, var(--sage) 0%, var(--sage) ${((( value ?? 80) - 50) / 50) * 100}%, var(--cream-deeper) ${(((value ?? 80) - 50) / 50) * 100}%, var(--cream-deeper) 100%)`
-              : 'var(--cream-deeper)',
-          }}
-        />
-        <div className="flex justify-between mt-2 text-vino-xs text-charcoal-soft font-body">
-          <span>50</span>
-          <span>75</span>
-          <span>100</span>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          type="number"
-          min={50}
-          max={100}
-          value={value ?? ''}
-          onChange={handleChange}
-          placeholder="80"
-          className={cn(
-            'w-20 text-center rounded-input border border-cream-deeper bg-cream-dark',
-            'px-3 py-2 text-vino-lg font-body text-charcoal',
-            'focus:outline-none focus:ring-2 focus:ring-sage',
+      {/* Slider */}
+      <div className="flex items-stretch gap-4">
+        {/* Track */}
+        <div
+          ref={trackRef}
+          className="relative w-12 cursor-pointer"
+          style={{ height: TRACK_HEIGHT }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+        >
+          {/* Track background */}
+          <div
+            className="absolute bottom-0 top-0 mx-auto rounded-full"
+            style={{ left: '50%', transform: 'translateX(-50%)', width: 8, background: 'var(--cream-deeper)' }}
+          />
+          {/* Track fill */}
+          {value != null && (
+            <div
+              className="absolute bottom-0 mx-auto rounded-full"
+              style={{
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 8,
+                height: `${fillPct}%`,
+                background: 'var(--sage)',
+              }}
+            />
           )}
-        />
-        <span className="text-vino-base text-charcoal-soft">/ 100</span>
+          {/* Tick marks at each star position */}
+          {[1, 2, 3, 4, 5].map((star) => {
+            const pct = ((star - MIN) / (MAX - MIN)) * 100
+            return (
+              <div
+                key={star}
+                className="absolute rounded-full"
+                style={{
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  bottom: `${pct}%`,
+                  marginBottom: -1,
+                  width: 14,
+                  height: 2,
+                  background: 'var(--cream-deeper)',
+                  opacity: 0.8,
+                  zIndex: 1,
+                }}
+              />
+            )
+          })}
+          {/* Thumb */}
+          {value != null && (
+            <div
+              className="absolute rounded-full bg-cream"
+              style={{
+                left: '50%',
+                transform: 'translateX(-50%)',
+                bottom: `calc(${fillPct}% - 14px)`,
+                width: 28,
+                height: 28,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.18), 0 0 0 2px var(--sage)',
+                zIndex: 2,
+              }}
+            />
+          )}
+        </div>
+
+        {/* Star labels */}
+        <div className="relative" style={{ height: TRACK_HEIGHT }}>
+          {[1, 2, 3, 4, 5].map((star) => {
+            const pct = ((star - MIN) / (MAX - MIN)) * 100
+            return (
+              <div
+                key={star}
+                className="absolute flex items-center text-vino-xs text-charcoal-soft font-body"
+                style={{ bottom: `${pct}%`, transform: 'translateY(50%)' }}
+              >
+                {star}★
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
