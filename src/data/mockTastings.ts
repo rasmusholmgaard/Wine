@@ -42,6 +42,9 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
     qualityLevel: '1er Cru',
     score: 4.6,
     personalNotes: 'Klassisk Bourgogne-profil. Meget elegant med fin mineralitet.',
+    tastingMode: 'advanced',
+    casualAromas: [],
+    casualFlavors: [],
     isCompleted: true,
   },
   {
@@ -88,6 +91,9 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
     wineName: 'Barolo Cannubi',
     producer: 'Borgogno',
     vintage: '2012',
+    tastingMode: 'advanced',
+    casualAromas: [],
+    casualFlavors: [],
     isCompleted: true,
   },
   {
@@ -131,6 +137,9 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
     qualityLevel: 'AOP',
     score: 4.5,
     personalNotes: 'Ren mineralitet, citrus og hvide blomster. Chablis-stil.',
+    tastingMode: 'advanced',
+    casualAromas: [],
+    casualFlavors: [],
     isCompleted: true,
   },
   {
@@ -176,6 +185,9 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
     personalNotes: 'Château Margaux 2015. Et af de bedste vine jeg har smagt.',
     wineName: 'Château Margaux',
     vintage: '2015',
+    tastingMode: 'advanced',
+    casualAromas: [],
+    casualFlavors: [],
     isCompleted: true,
   },
   {
@@ -222,6 +234,9 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
     wineName: 'Puligny-Montrachet 1er Cru',
     producer: 'Domaine Leflaive',
     vintage: '2019',
+    tastingMode: 'advanced',
+    casualAromas: [],
+    casualFlavors: [],
     isCompleted: true,
   },
   {
@@ -268,6 +283,9 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
     wineName: 'Monte Bello',
     producer: 'Ridge Vineyards',
     vintage: '2013',
+    tastingMode: 'advanced',
+    casualAromas: [],
+    casualFlavors: [],
     isCompleted: true,
   },
   {
@@ -311,6 +329,9 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
     qualityLevel: 'Prädikat',
     score: 4.6,
     personalNotes: 'Smuk Riesling Spätlese. Perfekt syre/sødme-balance.',
+    tastingMode: 'advanced',
+    casualAromas: [],
+    casualFlavors: [],
     isCompleted: true,
   },
   {
@@ -357,6 +378,9 @@ export const MOCK_TASTINGS: CompletedTasting[] = [
     wineName: 'Brunello di Montalcino',
     producer: 'Biondi-Santi',
     vintage: '2016',
+    tastingMode: 'advanced',
+    casualAromas: [],
+    casualFlavors: [],
     isCompleted: true,
   },
 ]
