@@ -4,12 +4,10 @@ import AppShell from '../components/layout/AppShell'
 import BottomNav from '../components/layout/BottomNav'
 import WineCard from '../components/cards/WineCard'
 import { useApp } from '../context/AppContext'
-import { useTasting } from '../context/TastingContext'
 
 export default function HomePage() {
   const navigate = useNavigate()
   const { tastings } = useApp()
-  const { reset } = useTasting()
   const recent = tastings.slice(0, 10)
 
   return (
@@ -35,7 +33,7 @@ export default function HomePage() {
       {/* CTA */}
       <div className="px-5 pb-6">
         <button
-          onClick={() => { reset(); navigate('/tasting/blind') }}
+          onClick={() => navigate('/tasting/mode-select')}
           className="w-full py-4 rounded-card bg-sage text-white font-body font-semibold text-vino-base flex items-center justify-center gap-2 hover:bg-sage-dark active:scale-[0.98] transition-[transform,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
           style={{ boxShadow: 'var(--shadow-vino-lg)' }}
         >

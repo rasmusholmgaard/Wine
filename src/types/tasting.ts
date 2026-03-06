@@ -1,6 +1,7 @@
 export interface TastingNote {
   id: string
   mode: 'blind'
+  tastingMode: 'casual' | 'advanced'
   createdAt: string
   wineType: 'white' | 'red' | 'rosé' | ''
 
@@ -52,6 +53,10 @@ export interface TastingNote {
   wineName?: string
   producer?: string
   vintage?: string
+
+  // Casual mode fields
+  casualAromas: string[]
+  casualFlavors: string[]
 }
 
 export type CompletedTasting = TastingNote & {
@@ -61,6 +66,7 @@ export type CompletedTasting = TastingNote & {
 export const EMPTY_TASTING: TastingNote = {
   id: '',
   mode: 'blind',
+  tastingMode: 'advanced',
   createdAt: '',
   wineType: '',
   clarity: '',
@@ -99,4 +105,6 @@ export const EMPTY_TASTING: TastingNote = {
   qualityLevel: '',
   score: null,
   personalNotes: '',
+  casualAromas: [],
+  casualFlavors: [],
 }

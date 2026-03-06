@@ -3,6 +3,7 @@ import ChipButton from '../primitives/ChipButton'
 import SegmentedControl from '../primitives/SegmentedControl'
 import TagChipGroup from '../primitives/TagChipGroup'
 import TextInput from '../primitives/TextInput'
+import TagTextInput from '../primitives/TagTextInput'
 import {
   CONDITION_OPTIONS,
   FRUIT_CONDITION_OPTIONS,
@@ -30,6 +31,7 @@ export function getNoseTitle(fieldKey: keyof TastingNote): string {
     primaryAromas: 'Primære aromaer',
     secondaryAromas: 'Sekundære aromaer',
     tertiaryAromas: 'Tertiære aromaer',
+    casualAromas: 'Aromaer',
   }
   return titles[fieldKey] ?? String(fieldKey)
 }
@@ -119,6 +121,15 @@ export default function StepNose({ fieldKey, data, setField }: StepNoseProps) {
             placeholder="Tilføj egne noter..."
           />
         </div>
+      )
+
+    case 'casualAromas':
+      return (
+        <TagTextInput
+          value={data.casualAromas ?? []}
+          onChange={(v) => setField('casualAromas', v)}
+          placeholder="Skriv en aroma og tryk Enter..."
+        />
       )
 
     default:

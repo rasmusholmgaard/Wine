@@ -2,6 +2,7 @@ import type { TastingNote } from '../../types/tasting'
 import ChipButton from '../primitives/ChipButton'
 import SegmentedControl from '../primitives/SegmentedControl'
 import TextInput from '../primitives/TextInput'
+import TagTextInput from '../primitives/TagTextInput'
 
 interface StepPalateProps {
   fieldKey: keyof TastingNote
@@ -31,6 +32,7 @@ export function getPalateTitle(fieldKey: keyof TastingNote): string {
     balance: 'Er vinen i balance?',
     finishLength: 'Hvad er smagens længde?',
     complexity: 'Hvad er kompleksiteten?',
+    casualFlavors: 'Smagsnoter',
   }
   return titles[fieldKey] ?? String(fieldKey)
 }
@@ -104,6 +106,15 @@ export default function StepPalate({ fieldKey, data, setField }: StepPalateProps
 
     case 'complexity':
       return <SegmentedControl options={COMPLEXITY_OPTIONS} value={data.complexity || null} onChange={(v) => setField('complexity', v)} />
+
+    case 'casualFlavors':
+      return (
+        <TagTextInput
+          value={data.casualFlavors ?? []}
+          onChange={(v) => setField('casualFlavors', v)}
+          placeholder="Skriv en smag og tryk Enter..."
+        />
+      )
 
     default:
       return null

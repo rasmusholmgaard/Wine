@@ -12,6 +12,8 @@ import CellarGrapePage from './pages/CellarGrapePage'
 import CellarTimelinePage from './pages/CellarTimelinePage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+import ModeSelectPage from './pages/ModeSelectPage'
+import CasualTastingPage from './pages/CasualTastingPage'
 
 export default function App() {
   return (
@@ -31,10 +33,26 @@ export default function App() {
                 }
               />
               <Route
+                path="/tasting/mode-select"
+                element={
+                  <ProtectedRoute>
+                    <ModeSelectPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/tasting/blind"
                 element={
                   <ProtectedRoute>
                     <BlindTastingPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/tasting/casual"
+                element={
+                  <ProtectedRoute>
+                    <CasualTastingPage />
                   </ProtectedRoute>
                 }
               />

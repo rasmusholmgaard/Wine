@@ -51,7 +51,7 @@ export default function WineCard({ tasting }: WineCardProps) {
           {getTitle(tasting)}
         </p>
         <p className="text-vino-sm text-charcoal-mid font-body mt-0.5 truncate">
-          ● Blind · {tasting.countryGuess || '—'}
+          ● {(tasting.tastingMode ?? 'advanced') === 'casual' ? 'Casual' : 'Blind'} · {tasting.countryGuess || '—'}
           {tasting.producer && ` · ${tasting.producer}`}
         </p>
         <p className="text-vino-xs text-charcoal-soft font-body mt-0.5">

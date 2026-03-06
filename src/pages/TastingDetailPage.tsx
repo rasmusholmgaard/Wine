@@ -174,6 +174,11 @@ export default function TastingDetailPage() {
                 <EyeOff size={11} />
                 Blind
               </span>
+              {(tasting.tastingMode ?? 'advanced') === 'casual' && (
+                <span className="inline-flex items-center text-vino-xs font-body font-medium px-2 py-1 rounded-chip bg-sage/15 text-sage">
+                  Casual
+                </span>
+              )}
               <span className="text-vino-xs text-charcoal-soft font-body">{formatDate(tasting.createdAt)}</span>
             </div>
           </div>
@@ -229,15 +234,21 @@ export default function TastingDetailPage() {
         {/* Nose */}
         <Section title="Næse">
           <Row label="Intensitet" value={tasting.noseIntensity} />
-          <Row label="Frugtkondition" value={tasting.fruitCondition} />
-          <Row label="Alder" value={tasting.ageEstimate} />
-          <Row label="Primære" value={tasting.primaryAromas} />
-          {tasting.primaryAromasCustom && <Row label="Primære (egne)" value={tasting.primaryAromasCustom} />}
-          <Row label="Sekundære" value={tasting.secondaryAromas} />
-          {tasting.secondaryAromasCustom && <Row label="Sekundære (egne)" value={tasting.secondaryAromasCustom} />}
-          <Row label="Tertiære" value={tasting.tertiaryAromas} />
-          {tasting.tertiaryAromasCustom && <Row label="Tertiære (egne)" value={tasting.tertiaryAromasCustom} />}
-          {tasting.condition && tasting.condition !== 'Ren' && <Row label="Tilstand" value={tasting.condition} />}
+          {(tasting.tastingMode ?? 'advanced') === 'casual' ? (
+            <Row label="Aromaer" value={tasting.casualAromas} />
+          ) : (
+            <>
+              <Row label="Frugtkondition" value={tasting.fruitCondition} />
+              <Row label="Alder" value={tasting.ageEstimate} />
+              <Row label="Primære" value={tasting.primaryAromas} />
+              {tasting.primaryAromasCustom && <Row label="Primære (egne)" value={tasting.primaryAromasCustom} />}
+              <Row label="Sekundære" value={tasting.secondaryAromas} />
+              {tasting.secondaryAromasCustom && <Row label="Sekundære (egne)" value={tasting.secondaryAromasCustom} />}
+              <Row label="Tertiære" value={tasting.tertiaryAromas} />
+              {tasting.tertiaryAromasCustom && <Row label="Tertiære (egne)" value={tasting.tertiaryAromasCustom} />}
+              {tasting.condition && tasting.condition !== 'Ren' && <Row label="Tilstand" value={tasting.condition} />}
+            </>
+          )}
         </Section>
 
         {/* Palate */}
@@ -245,14 +256,20 @@ export default function TastingDetailPage() {
           <Row label="Sødme" value={tasting.sweetness} />
           <Row label="Tanniner" value={tasting.tannins} />
           <Row label="Syre" value={tasting.acidity} />
-          <Row label="Alkohol" value={tasting.alcohol} />
-          {tasting.bodyTexture && <Row label="Krop/Tekstur" value={tasting.bodyTexture} />}
-          <Row label="Balance" value={tasting.balance} />
-          <Row label="Smagens længde" value={tasting.finishLength} />
-          <Row label="Kompleksitet" value={tasting.complexity} />
-          {tasting.primaryFlavorsText && <Row label="Primære smage" value={tasting.primaryFlavorsText} />}
-          {tasting.secondaryFlavorsText && <Row label="Sekundære smage" value={tasting.secondaryFlavorsText} />}
-          {tasting.tertiaryFlavorsText && <Row label="Tertiære smage" value={tasting.tertiaryFlavorsText} />}
+          {(tasting.tastingMode ?? 'advanced') === 'casual' ? (
+            <Row label="Smagsnoter" value={tasting.casualFlavors} />
+          ) : (
+            <>
+              <Row label="Alkohol" value={tasting.alcohol} />
+              {tasting.bodyTexture && <Row label="Krop/Tekstur" value={tasting.bodyTexture} />}
+              <Row label="Balance" value={tasting.balance} />
+              <Row label="Smagens længde" value={tasting.finishLength} />
+              <Row label="Kompleksitet" value={tasting.complexity} />
+              {tasting.primaryFlavorsText && <Row label="Primære smage" value={tasting.primaryFlavorsText} />}
+              {tasting.secondaryFlavorsText && <Row label="Sekundære smage" value={tasting.secondaryFlavorsText} />}
+              {tasting.tertiaryFlavorsText && <Row label="Tertiære smage" value={tasting.tertiaryFlavorsText} />}
+            </>
+          )}
         </Section>
       </div>
 
