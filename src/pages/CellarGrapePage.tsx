@@ -1,11 +1,18 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Star } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import WineCard from '../components/cards/WineCard'
 import type { CompletedTasting } from '../types/tasting'
 
+function avgScore(tastings: CompletedTasting[]): string | null {
+  const scores = tastings.map((t) => t.score).filter((s): s is number => s !== null)
+  if (scores.length === 0) return null
+  return (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
+}
+
 function GrapeGroup({ grape, tastings }: { grape: string; tastings: CompletedTasting[] }) {
   const [open, setOpen] = useState(true)
+  const avg = avgScore(tastings)
 
   return (
     <div className="mb-4">
@@ -18,6 +25,12 @@ function GrapeGroup({ grape, tastings }: { grape: string; tastings: CompletedTas
           <span className="text-vino-xs text-charcoal-soft font-body bg-cream-dark px-2 py-0.5 rounded-chip">
             {tastings.length}
           </span>
+          {avg && (
+            <span className="flex items-center gap-0.5 text-vino-xs font-body font-medium text-vino bg-vino/10 px-2 py-0.5 rounded-chip">
+              <Star size={10} className="fill-vino text-vino" />
+              {avg}
+            </span>
+          )}
         </div>
         {open ? (
           <ChevronDown size={18} className="text-charcoal-soft" />

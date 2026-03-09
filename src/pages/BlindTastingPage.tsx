@@ -6,6 +6,7 @@ import TastingFlowLayout from '../components/layout/TastingFlowLayout'
 import StepTransition from '../components/layout/StepTransition'
 import StepIntroScreen from '../components/layout/StepIntroScreen'
 import StepScrollView, { type StepScrollViewHandle } from '../components/tasting/StepScrollView'
+import RevealStep from '../components/tasting/RevealStep'
 import ExitTastingDialog from '../components/layout/ExitTastingDialog'
 
 export default function BlindTastingPage() {
@@ -42,20 +43,24 @@ export default function BlindTastingPage() {
   }
 
   async function handleNext() {
+    if (isAtEnd) {
+      if (isSaving) return
+      setIsSaving(true)
+      try {
+        const completed = submit()
+        await addTasting(completed)
+        navigate(`/tasting/${completed.id}`)
+      } catch {
+        setIsSaving(false)
+      }
+      return
+    }
     if (scrollViewRef.current && !scrollViewRef.current.isAtLastQuestion()) {
       scrollViewRef.current.scrollNext()
       return
     }
-    if (isAtEnd) {
-      if (isSaving) return
-      setIsSaving(true)
-      const completed = submit()
-      await addTasting(completed)
-      navigate(`/tasting/${completed.id}`)
-    } else {
-      goNext()
-      setShowIntro(true)
-    }
+    goNext()
+    setShowIntro(true)
   }
 
   const fieldKeys = stepQuestions[currentStep] ?? []
@@ -96,18 +101,22 @@ export default function BlindTastingPage() {
         nextDisabled={isSaving}
         canScrollUp={questionNav.canUp}
         canScrollDown={questionNav.canDown}
-        onScrollUp={() => scrollViewRef.current?.scrollPrev()}
-        onScrollDown={() => scrollViewRef.current?.scrollNext()}
+        onScrollUp={currentStep === 5 ? undefined : () => scrollViewRef.current?.scrollPrev()}
+        onScrollDown={currentStep === 5 ? undefined : () => scrollViewRef.current?.scrollNext()}
       >
         <StepTransition stepKey={`step-${currentStep}`} direction={direction}>
-          <StepScrollView
-            ref={scrollViewRef}
-            step={currentStep}
-            fieldKeys={fieldKeys}
-            data={data}
-            setField={setField}
-            onQuestionChange={handleQuestionChange}
-          />
+          {currentStep === 5 ? (
+            <RevealStep data={data} setField={setField} />
+          ) : (
+            <StepScrollView
+              ref={scrollViewRef}
+              step={currentStep}
+              fieldKeys={fieldKeys}
+              data={data}
+              setField={setField}
+              onQuestionChange={handleQuestionChange}
+            />
+          )}
         </StepTransition>
       </TastingFlowLayout>
       {showExitDialog && (

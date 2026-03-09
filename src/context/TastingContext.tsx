@@ -8,7 +8,7 @@ export const BLIND_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
   2: ['noseIntensity', 'fruitCondition', 'ageEstimate', 'primaryAromas', 'secondaryAromas', 'tertiaryAromas', 'condition'],
   3: ['sweetness', 'tannins', 'acidity', 'alcohol', 'bodyTexture', 'primaryFlavorsText', 'secondaryFlavorsText', 'tertiaryFlavorsText', 'balance', 'finishLength', 'complexity'],
   4: ['climate', 'grapeGuess', 'countryGuess', 'regionGuess', 'vintageEstimate', 'qualityLevel', 'score', 'personalNotes'],
-  5: ['wineName', 'producer', 'vintage'],
+  5: ['labelPhotoUrl', 'wineName', 'producer', 'vintage', 'wineCountry', 'wineRegion'],
 }
 
 export const CASUAL_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
@@ -16,6 +16,7 @@ export const CASUAL_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
   2: ['noseIntensity', 'casualAromas'],
   3: ['sweetness', 'tannins', 'acidity', 'casualFlavors'],
   4: ['grapeGuess', 'countryGuess', 'vintageEstimate', 'score', 'personalNotes'],
+  5: ['wineName', 'producer', 'vintage', 'labelPhotoUrl'],
 }
 
 export const STEP_NAMES: Record<number, string> = {
@@ -39,6 +40,7 @@ export const CASUAL_STEP_NAMES: Record<number, string> = {
   2: 'Næse',
   3: 'Gane',
   4: 'Konklusion',
+  5: 'Afsløring',
 }
 
 export const CASUAL_STEP_ICONS: Record<number, string> = {
@@ -46,6 +48,7 @@ export const CASUAL_STEP_ICONS: Record<number, string> = {
   2: '👃',
   3: '👅',
   4: '🏆',
+  5: '🏷️',
 }
 
 interface TastingFlowState {
@@ -74,7 +77,7 @@ export function TastingProvider({ children }: { children: ReactNode }) {
 
   const isCasual = data.tastingMode === 'casual'
   const stepQuestions = isCasual ? CASUAL_STEP_QUESTIONS : BLIND_STEP_QUESTIONS
-  const totalSteps = isCasual ? 4 : 5
+  const totalSteps = 5
 
   const setField = useCallback((key: keyof TastingNote, value: TastingNote[keyof TastingNote]) => {
     setData((prev) => ({ ...prev, [key]: value }))

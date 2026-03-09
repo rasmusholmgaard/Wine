@@ -180,10 +180,18 @@ export default function TastingDetailPage() {
         </div>
 
         <div className="flex items-start gap-4">
-          <div
-            className="w-14 h-14 rounded-full flex-shrink-0 mt-1"
-            style={{ backgroundColor: dotColor }}
-          />
+          {tasting.labelPhotoUrl ? (
+            <img
+              src={tasting.labelPhotoUrl}
+              alt="Etiket"
+              className="w-14 h-14 rounded-full flex-shrink-0 mt-1 object-cover"
+            />
+          ) : (
+            <div
+              className="w-14 h-14 rounded-full flex-shrink-0 mt-1"
+              style={{ backgroundColor: dotColor }}
+            />
+          )}
           <div className="flex-1 min-w-0">
             <h1 className="font-display text-vino-2xl text-charcoal font-semibold leading-tight">
               {title}

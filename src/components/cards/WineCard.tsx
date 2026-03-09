@@ -39,11 +39,19 @@ export default function WineCard({ tasting }: WineCardProps) {
       className="w-full text-left rounded-card bg-cream-dark px-4 py-4 flex items-center gap-4 hover:bg-cream-deeper active:scale-[0.98] transition-[transform,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage"
       style={{ boxShadow: 'var(--shadow-vino)' }}
     >
-      {/* Color dot */}
-      <div
-        className="w-10 h-10 rounded-full flex-shrink-0"
-        style={{ backgroundColor: dotColor, boxShadow: `0 0 0 3px rgba(${dotColor}, 0.15)` }}
-      />
+      {/* Color dot / label photo */}
+      {tasting.labelPhotoUrl ? (
+        <img
+          src={tasting.labelPhotoUrl}
+          alt="Etiket"
+          className="w-10 h-10 rounded-full flex-shrink-0 object-cover"
+        />
+      ) : (
+        <div
+          className="w-10 h-10 rounded-full flex-shrink-0"
+          style={{ backgroundColor: dotColor, boxShadow: `0 0 0 3px rgba(${dotColor}, 0.15)` }}
+        />
+      )}
 
       {/* Info */}
       <div className="flex-1 min-w-0">

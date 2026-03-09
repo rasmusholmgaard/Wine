@@ -1,8 +1,25 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Star } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import WineCard from '../components/cards/WineCard'
 import type { CompletedTasting } from '../types/tasting'
+
+function avgScore(tastings: CompletedTasting[]): string | null {
+  const scores = tastings.map((t) => t.score).filter((s): s is number => s !== null)
+  if (scores.length === 0) return null
+  return (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
+}
+
+function ScoreBadge({ tastings }: { tastings: CompletedTasting[] }) {
+  const avg = avgScore(tastings)
+  if (!avg) return null
+  return (
+    <span className="flex items-center gap-0.5 text-vino-xs font-body font-medium text-vino bg-vino/10 px-2 py-0.5 rounded-chip">
+      <Star size={10} className="fill-vino text-vino" />
+      {avg}
+    </span>
+  )
+}
 
 function CountryGroup({ country, tastings }: { country: string; tastings: CompletedTasting[] }) {
   const [open, setOpen] = useState(true)
@@ -26,6 +43,7 @@ function CountryGroup({ country, tastings }: { country: string; tastings: Comple
           <span className="text-vino-xs text-charcoal-soft font-body bg-cream-dark px-2 py-0.5 rounded-chip">
             {tastings.length}
           </span>
+          <ScoreBadge tastings={tastings} />
         </div>
         {open ? (
           <ChevronDown size={18} className="text-charcoal-soft" />
@@ -39,7 +57,10 @@ function CountryGroup({ country, tastings }: { country: string; tastings: Comple
           {Object.entries(byRegion).map(([region, ts]) => (
             <div key={region} className="mb-3">
               {Object.keys(byRegion).length > 1 && (
-                <p className="text-vino-sm text-charcoal-mid font-body font-medium mb-2 pl-1">{region}</p>
+                <div className="flex items-center gap-2 mb-2 pl-1">
+                  <p className="text-vino-sm text-charcoal-mid font-body font-medium">{region}</p>
+                  <ScoreBadge tastings={ts} />
+                </div>
               )}
               <div className="flex flex-col gap-2">
                 {ts.map((t) => (
