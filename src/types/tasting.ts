@@ -53,6 +53,7 @@ export interface TastingNote {
   wineName?: string
   producer?: string
   vintage?: string
+  labelPhotoUrl?: string
 
   // Casual mode fields
   casualAromas: string[]

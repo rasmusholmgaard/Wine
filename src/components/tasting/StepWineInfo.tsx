@@ -1,6 +1,7 @@
 import type { TastingNote } from '../../types/tasting'
 import ChipButton from '../primitives/ChipButton'
 import TextInput from '../primitives/TextInput'
+import PhotoCapture from '../primitives/PhotoCapture'
 import { COUNTRIES, REGIONS } from '../../data/regionTaxonomy'
 
 interface StepWineInfoProps {
@@ -19,6 +20,7 @@ export function getWineInfoTitle(fieldKey: keyof TastingNote): string {
     vintage: 'Hvad er årgangen?',
     countryGuess: 'Hvilket land er vinen fra?',
     regionGuess: 'Hvilken region?',
+    labelPhotoUrl: 'Tag et foto af etiketten',
   }
   return titles[fieldKey] ?? fieldKey
 }
@@ -116,6 +118,14 @@ export default function StepWineInfo({ fieldKey, data, setField }: StepWineInfoP
             placeholder={regionsForCountry.length > 0 ? 'Eller skriv fritekst...' : 'Region...'}
           />
         </div>
+      )
+
+    case 'labelPhotoUrl':
+      return (
+        <PhotoCapture
+          value={data.labelPhotoUrl ?? ''}
+          onChange={(url) => setField('labelPhotoUrl', url)}
+        />
       )
 
     default:

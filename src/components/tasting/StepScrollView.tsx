@@ -25,6 +25,7 @@ function getRevealTitle(fieldKey: keyof TastingNote): string {
     wineName: 'Hvad hed vinen?',
     producer: 'Hvem var producenten?',
     vintage: 'Hvad var årgangen?',
+    labelPhotoUrl: 'Tag et foto af etiketten',
   }
   return titles[fieldKey] ?? String(fieldKey)
 }

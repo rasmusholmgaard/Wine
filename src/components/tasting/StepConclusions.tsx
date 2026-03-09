@@ -5,6 +5,7 @@ import TagChipGroup from '../primitives/TagChipGroup'
 import TextInput from '../primitives/TextInput'
 import ScoreInput from '../primitives/ScoreInput'
 import GrapeAutocomplete from '../primitives/GrapeAutocomplete'
+import PhotoCapture from '../primitives/PhotoCapture'
 import { COUNTRIES, REGIONS } from '../../data/regionTaxonomy'
 import { QUALITY_LEVELS } from '../../data/aromaOptions'
 
@@ -27,6 +28,7 @@ export function getConclusionsTitle(fieldKey: keyof TastingNote): string {
     qualityLevel: 'Hvad er kvalitetsniveauet?',
     score: 'Hvad er din samlede bedømmelse?',
     personalNotes: 'Personlige noter',
+    labelPhotoUrl: 'Tag et foto af etiketten',
   }
   return titles[fieldKey] ?? fieldKey
 }
@@ -115,6 +117,14 @@ export default function StepConclusions({ fieldKey, data, setField }: StepConclu
           multiline
           rows={5}
           autoFocus
+        />
+      )
+
+    case 'labelPhotoUrl':
+      return (
+        <PhotoCapture
+          value={data.labelPhotoUrl ?? ''}
+          onChange={(url) => setField('labelPhotoUrl', url)}
         />
       )
 

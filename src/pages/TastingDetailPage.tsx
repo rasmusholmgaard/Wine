@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, EyeOff, Home, Trash2 } from 'lucide-react'
+import { ArrowLeft, Camera, EyeOff, Home, Loader2, Trash2, X } from 'lucide-react'
 import AppShell from '../components/layout/AppShell'
 import { useApp } from '../context/AppContext'
+import { useAuth } from '../context/AuthContext'
+import { uploadLabelPhoto } from '../lib/storage'
 import { cn } from '../lib/utils'
 import StarRating from '../components/primitives/StarRating'
 
@@ -97,10 +99,35 @@ function DeleteDialog({ onCancel, onConfirm, isDeleting }: DeleteDialogProps) {
 export default function TastingDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { tastings, deleteTasting } = useApp()
+  const { tastings, deleteTasting, updateLabelPhoto } = useApp()
+  const { user } = useAuth()
   const tasting = tastings.find((t) => t.id === id)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
+  const [photoError, setPhotoError] = useState<string | null>(null)
+  const photoInputRef = useRef<HTMLInputElement>(null)
+
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file || !user || !tasting) return
+    setIsUploadingPhoto(true)
+    setPhotoError(null)
+    try {
+      const url = await uploadLabelPhoto(user.id, file)
+      await updateLabelPhoto(tasting.id, url)
+    } catch {
+      setPhotoError('Upload mislykkedes. Prøv igen.')
+    } finally {
+      setIsUploadingPhoto(false)
+      e.target.value = ''
+    }
+  }
+
+  async function handleRemovePhoto() {
+    if (!tasting) return
+    await updateLabelPhoto(tasting.id, '')
+  }
 
   async function handleDelete() {
     if (!tasting) return
@@ -194,6 +221,45 @@ export default function TastingDetailPage() {
       </div>
 
       <div className="px-5 py-6">
+        {/* Label photo */}
+        <div className="mb-6">
+          {tasting.labelPhotoUrl ? (
+            <div className="flex flex-col gap-2">
+              <div className="relative rounded-card overflow-hidden" style={{ boxShadow: 'var(--shadow-vino)' }}>
+                <img src={tasting.labelPhotoUrl} alt="Etiketfoto" className="w-full object-cover max-h-80" />
+                <button
+                  onClick={handleRemovePhoto}
+                  className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-[0.94] transition-[transform,background-color] duration-200"
+                  aria-label="Fjern foto"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <button
+                onClick={() => photoInputRef.current?.click()}
+                disabled={isUploadingPhoto}
+                className="flex items-center justify-center gap-2 py-2.5 rounded-card bg-cream-dark text-charcoal-mid font-body text-vino-sm hover:bg-cream-deeper active:scale-[0.97] transition-[transform,background-color] duration-200 disabled:opacity-60"
+                style={{ boxShadow: 'var(--shadow-vino)' }}
+              >
+                {isUploadingPhoto ? <Loader2 size={15} className="animate-spin" /> : <Camera size={15} />}
+                {isUploadingPhoto ? 'Uploader…' : 'Skift foto'}
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => photoInputRef.current?.click()}
+              disabled={isUploadingPhoto}
+              className="w-full flex flex-col items-center justify-center gap-2 py-8 rounded-card border-2 border-dashed border-cream-deeper bg-cream-dark text-charcoal-soft hover:bg-cream-deeper hover:text-charcoal hover:border-sage active:scale-[0.98] transition-all duration-200 disabled:opacity-60"
+              style={{ boxShadow: 'var(--shadow-vino)' }}
+            >
+              {isUploadingPhoto ? <Loader2 size={24} className="animate-spin text-sage" /> : <Camera size={24} />}
+              <span className="font-body text-vino-sm">{isUploadingPhoto ? 'Uploader…' : 'Tilføj etiketfoto'}</span>
+            </button>
+          )}
+          {photoError && <p className="mt-2 text-vino-sm text-wine-red font-body text-center">{photoError}</p>}
+          <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+        </div>
+
         {/* Revealed wine info (blind tasting only) */}
         {hasReveal && (
           <Section title="🏷️ Afsløring">

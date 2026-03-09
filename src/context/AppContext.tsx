@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import type { CompletedTasting } from '../types/tasting'
 import { supabase } from '../lib/supabase'
+import { deleteLabelPhoto } from '../lib/storage'
 import { useAuth } from './AuthContext'
 
 interface AppContextValue {
@@ -8,6 +9,7 @@ interface AppContextValue {
   isLoading: boolean
   addTasting: (t: CompletedTasting) => Promise<void>
   deleteTasting: (id: string) => Promise<void>
+  updateLabelPhoto: (id: string, url: string) => Promise<void>
 }
 
 const AppContext = createContext<AppContextValue | null>(null)
@@ -47,14 +49,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setTastings((prev) => [t, ...prev])
   }
 
+  async function updateLabelPhoto(id: string, url: string) {
+    const tasting = tastings.find((t) => t.id === id)
+    if (!tasting) return
+    const updated = { ...tasting, labelPhotoUrl: url || undefined }
+    const { error } = await supabase
+      .from('tastings')
+      .update({ data: updated })
+      .eq('id', id)
+    if (error) throw error
+    if (tasting.labelPhotoUrl && tasting.labelPhotoUrl !== url) {
+      deleteLabelPhoto(tasting.labelPhotoUrl).catch(() => {})
+    }
+    setTastings((prev) => prev.map((t) => (t.id === id ? updated : t)))
+  }
+
   async function deleteTasting(id: string) {
+    const tasting = tastings.find((t) => t.id === id)
     const { error } = await supabase.from('tastings').delete().eq('id', id)
     if (error) throw error
+    if (tasting?.labelPhotoUrl) {
+      deleteLabelPhoto(tasting.labelPhotoUrl).catch(() => {})
+    }
     setTastings((prev) => prev.filter((t) => t.id !== id))
   }
 
   return (
-    <AppContext.Provider value={{ tastings, isLoading, addTasting, deleteTasting }}>
+    <AppContext.Provider value={{ tastings, isLoading, addTasting, deleteTasting, updateLabelPhoto }}>
       {children}
     </AppContext.Provider>
   )
