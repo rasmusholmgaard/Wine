@@ -39,7 +39,9 @@ export default function RevealStep({ data, setField }: RevealStepProps) {
       if (result.grape) setField('wineGrape', result.grape)
       if (result.vintage) setField('vintage', result.vintage)
       if (result.country) setField('wineCountry', result.country)
-      if (result.region) setField('wineRegion', result.region)
+      // Prefer sub_region (more specific) over region when both are present
+      const bestRegion = result.subRegion ?? result.region
+      if (bestRegion) setField('wineRegion', bestRegion)
     } catch (err) {
       console.error('analyzeLabel error:', err)
       setScanError('Kunne ikke analysere etiketten. Prøv igen.')
