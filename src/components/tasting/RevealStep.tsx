@@ -1,8 +1,11 @@
+import { useState } from 'react'
+import { ScanLine, Loader2 } from 'lucide-react'
 import type { TastingNote } from '../../types/tasting'
 import TextInput from '../primitives/TextInput'
 import PhotoCapture from '../primitives/PhotoCapture'
 import ChipButton from '../primitives/ChipButton'
 import { COUNTRIES, REGIONS } from '../../data/regionTaxonomy'
+import { analyzeLabel } from '../../lib/vision'
 
 interface RevealStepProps {
   data: TastingNote
@@ -18,9 +21,32 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 export default function RevealStep({ data, setField }: RevealStepProps) {
+  const [scanning, setScanning] = useState(false)
+  const [scanError, setScanError] = useState<string | null>(null)
+
   const regionsForCountry = data.wineCountry && REGIONS[data.wineCountry]
     ? REGIONS[data.wineCountry]
     : []
+
+  async function handleScan() {
+    if (!data.labelPhotoUrl) return
+    setScanning(true)
+    setScanError(null)
+    try {
+      const result = await analyzeLabel(data.labelPhotoUrl)
+      if (result.wineName) setField('wineName', result.wineName)
+      if (result.producer) setField('producer', result.producer)
+      if (result.grape) setField('wineGrape', result.grape)
+      if (result.vintage) setField('vintage', result.vintage)
+      if (result.country) setField('wineCountry', result.country)
+      if (result.region) setField('wineRegion', result.region)
+    } catch (err) {
+      console.error('analyzeLabel error:', err)
+      setScanError('Kunne ikke analysere etiketten. Prøv igen.')
+    } finally {
+      setScanning(false)
+    }
+  }
 
   return (
     <div className="flex-1 min-h-0 overflow-y-auto">
@@ -32,6 +58,28 @@ export default function RevealStep({ data, setField }: RevealStepProps) {
           value={data.labelPhotoUrl ?? ''}
           onChange={(url) => setField('labelPhotoUrl', url)}
         />
+        {data.labelPhotoUrl && (
+          <button
+            onClick={handleScan}
+            disabled={scanning}
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-card bg-sage/15 text-sage font-body font-medium text-vino-sm active:scale-[0.98] transition-transform disabled:opacity-60"
+          >
+            {scanning ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Analyserer…
+              </>
+            ) : (
+              <>
+                <ScanLine size={16} />
+                Analyser etiket
+              </>
+            )}
+          </button>
+        )}
+        {scanError && (
+          <p className="text-vino-xs text-red-500 font-body">{scanError}</p>
+        )}
       </section>
 
       {/* Wine Name */}
@@ -51,6 +99,16 @@ export default function RevealStep({ data, setField }: RevealStepProps) {
           value={data.producer ?? ''}
           onChange={(v) => setField('producer', v)}
           placeholder="F.eks. Domaine Leflaive..."
+        />
+      </section>
+
+      {/* Grape */}
+      <section className="flex flex-col gap-4">
+        <SectionLabel>Drue</SectionLabel>
+        <TextInput
+          value={data.wineGrape ?? ''}
+          onChange={(v) => setField('wineGrape', v)}
+          placeholder="F.eks. Pinot Noir..."
         />
       </section>
 

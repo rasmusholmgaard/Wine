@@ -52,6 +52,7 @@ export interface TastingNote {
   // Open tasting / Blind reveal extras
   wineName?: string
   producer?: string
+  wineGrape?: string
   vintage?: string
   wineCountry?: string
   wineRegion?: string

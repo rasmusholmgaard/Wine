@@ -8,7 +8,7 @@ export const BLIND_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
   2: ['noseIntensity', 'fruitCondition', 'ageEstimate', 'primaryAromas', 'secondaryAromas', 'tertiaryAromas', 'condition'],
   3: ['sweetness', 'tannins', 'acidity', 'alcohol', 'bodyTexture', 'primaryFlavorsText', 'secondaryFlavorsText', 'tertiaryFlavorsText', 'balance', 'finishLength', 'complexity'],
   4: ['climate', 'grapeGuess', 'countryGuess', 'regionGuess', 'vintageEstimate', 'qualityLevel', 'score', 'personalNotes'],
-  5: ['labelPhotoUrl', 'wineName', 'producer', 'vintage', 'wineCountry', 'wineRegion'],
+  5: ['labelPhotoUrl', 'wineName', 'producer', 'wineGrape', 'vintage', 'wineCountry', 'wineRegion'],
 }
 
 export const CASUAL_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
