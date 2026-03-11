@@ -14,6 +14,9 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import ModeSelectPage from './pages/ModeSelectPage'
 import CasualTastingPage from './pages/CasualTastingPage'
+import OpenTastingPage from './pages/OpenTastingPage'
+import GrapeLibraryPage from './pages/GrapeLibraryPage'
+import GrapeDetailPage from './pages/GrapeDetailPage'
 
 export default function App() {
   return (
@@ -57,10 +60,34 @@ export default function App() {
                 }
               />
               <Route
+                path="/tasting/open"
+                element={
+                  <ProtectedRoute>
+                    <OpenTastingPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/tasting/:id"
                 element={
                   <ProtectedRoute>
                     <TastingDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/library"
+                element={
+                  <ProtectedRoute>
+                    <GrapeLibraryPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/library/:grape"
+                element={
+                  <ProtectedRoute>
+                    <GrapeDetailPage />
                   </ProtectedRoute>
                 }
               />

@@ -1,6 +1,6 @@
 export interface TastingNote {
   id: string
-  mode: 'blind'
+  mode: 'blind' | 'open'
   tastingMode: 'casual' | 'advanced'
   createdAt: string
   wineType: 'white' | 'red' | 'rosé' | ''

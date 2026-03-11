@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom'
-import { Wine, BookOpen } from 'lucide-react'
+import { Wine, BookOpen, GraduationCap } from 'lucide-react'
 import { cn } from '../../lib/utils'
 
 const NAV_ITEMS = [
   { to: '/', icon: Wine, label: 'Tasting' },
+  { to: '/library', icon: GraduationCap, label: 'Library' },
   { to: '/cellar', icon: BookOpen, label: 'Historik' },
 ]
 

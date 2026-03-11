@@ -19,6 +19,23 @@ export const CASUAL_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
   5: ['wineName', 'producer', 'vintage', 'labelPhotoUrl'],
 }
 
+// Open mode: wine info first, then tasting steps, no reveal at end
+export const OPEN_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
+  1: ['labelPhotoUrl', 'wineName', 'producer', 'wineGrape', 'vintage', 'wineCountry', 'wineRegion'],
+  2: ['wineType', 'clarity', 'concentration', 'co2', 'sediment', 'color', 'rim', 'viscosity'],
+  3: ['noseIntensity', 'fruitCondition', 'ageEstimate', 'primaryAromas', 'secondaryAromas', 'tertiaryAromas', 'condition'],
+  4: ['sweetness', 'tannins', 'acidity', 'alcohol', 'bodyTexture', 'primaryFlavorsText', 'secondaryFlavorsText', 'tertiaryFlavorsText', 'balance', 'finishLength', 'complexity'],
+  5: ['qualityLevel', 'score', 'personalNotes'],
+}
+
+export const OPEN_CASUAL_STEP_QUESTIONS: Record<number, (keyof TastingNote)[]> = {
+  1: ['labelPhotoUrl', 'wineName', 'producer', 'vintage'],
+  2: ['wineType', 'color', 'concentration'],
+  3: ['noseIntensity', 'casualAromas'],
+  4: ['sweetness', 'tannins', 'acidity', 'casualFlavors'],
+  5: ['score', 'personalNotes'],
+}
+
 export const STEP_NAMES: Record<number, string> = {
   1: 'Syn',
   2: 'Næse',
@@ -51,6 +68,22 @@ export const CASUAL_STEP_ICONS: Record<number, string> = {
   5: '🏷️',
 }
 
+export const OPEN_STEP_NAMES: Record<number, string> = {
+  1: 'Vin Info',
+  2: 'Syn',
+  3: 'Næse',
+  4: 'Gane',
+  5: 'Konklusion',
+}
+
+export const OPEN_STEP_ICONS: Record<number, string> = {
+  1: '🏷️',
+  2: '👁️',
+  3: '👃',
+  4: '👅',
+  5: '🏆',
+}
+
 interface TastingFlowState {
   data: TastingNote
   currentStep: number
@@ -59,7 +92,7 @@ interface TastingFlowState {
   goNext: () => void
   goBack: () => void
   submit: () => CompletedTasting
-  reset: (tastingMode?: 'casual' | 'advanced') => void
+  reset: (mode: 'blind' | 'open', tastingMode: 'casual' | 'advanced') => void
   stepQuestions: Record<number, (keyof TastingNote)[]>
   totalSteps: number
 }
@@ -75,8 +108,11 @@ export function TastingProvider({ children }: { children: ReactNode }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [direction, setDirection] = useState<'forward' | 'back'>('forward')
 
+  const isOpen = data.mode === 'open'
   const isCasual = data.tastingMode === 'casual'
-  const stepQuestions = isCasual ? CASUAL_STEP_QUESTIONS : BLIND_STEP_QUESTIONS
+  const stepQuestions = isOpen
+    ? (isCasual ? OPEN_CASUAL_STEP_QUESTIONS : OPEN_STEP_QUESTIONS)
+    : (isCasual ? CASUAL_STEP_QUESTIONS : BLIND_STEP_QUESTIONS)
   const totalSteps = 5
 
   const setField = useCallback((key: keyof TastingNote, value: TastingNote[keyof TastingNote]) => {
@@ -107,8 +143,8 @@ export function TastingProvider({ children }: { children: ReactNode }) {
     return completed
   }, [data])
 
-  const reset = useCallback((tastingMode: 'casual' | 'advanced' = 'advanced') => {
-    setData({ ...EMPTY_TASTING, tastingMode })
+  const reset = useCallback((mode: 'blind' | 'open', tastingMode: 'casual' | 'advanced') => {
+    setData({ ...EMPTY_TASTING, mode, tastingMode })
     setCurrentStep(1)
     setDirection('forward')
   }, [])
