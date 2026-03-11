@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import AppShell from '../components/layout/AppShell'
-import { GRAPES, type Grape } from '../data/grapes'
+import { GRAPES } from '../data/grapes'
 
 function ScaleRow({ label, value, max = 5, accentColor }: { label: string; value: number; max?: number; accentColor: string }) {
   return (

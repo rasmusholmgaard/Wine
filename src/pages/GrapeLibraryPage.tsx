@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppShell from '../components/layout/AppShell'
 import BottomNav from '../components/layout/BottomNav'
-import { GRAPES, RED_GRAPES, WHITE_GRAPES, type Grape } from '../data/grapes'
+import { RED_GRAPES, WHITE_GRAPES, type Grape } from '../data/grapes'
 import { cn } from '../lib/utils'
 
 function ScaleDots({ value, max = 5, color }: { value: number; max?: number; color: string }) {
