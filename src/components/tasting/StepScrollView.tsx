@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState, useEffect, forwardRef, useImperativeHandle, type ReactNode } from 'react'
+import { useRef, useCallback, useState, useEffect, useLayoutEffect, forwardRef, useImperativeHandle, type ReactNode } from 'react'
 import type { TastingNote } from '../../types/tasting'
 import StepAppearance, { getAppearanceTitle } from './StepAppearance'
 import StepNose, { getNoseTitle } from './StepNose'
@@ -54,14 +54,24 @@ const StepScrollView = forwardRef<StepScrollViewHandle, StepScrollViewProps>(fun
   const containerRef = useRef<HTMLDivElement>(null)
   const questionRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const [activeIdx, setActiveIdx] = useState(0)
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Reset scroll position and active index when step changes
-  useEffect(() => {
+  // Reset scroll position before paint to prevent IntersectionObserver firing with stale position
+  useLayoutEffect(() => {
     const container = containerRef.current
     if (!container) return
     container.scrollTop = 0
     setActiveIdx(0)
   }, [step])
+
+  // Cancel any pending scroll timer on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimerRef.current !== null) {
+        clearTimeout(scrollTimerRef.current)
+      }
+    }
+  }, [])
 
   // Notify parent whenever navigation availability changes
   useEffect(() => {
@@ -99,7 +109,9 @@ const StepScrollView = forwardRef<StepScrollViewHandle, StepScrollViewProps>(fun
   const scrollToIndex = useCallback((idx: number) => {
     const key = fieldKeys[idx]
     if (key) {
-      setTimeout(() => {
+      if (scrollTimerRef.current !== null) clearTimeout(scrollTimerRef.current)
+      scrollTimerRef.current = setTimeout(() => {
+        scrollTimerRef.current = null
         questionRefs.current[key as string]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 250)
     }
