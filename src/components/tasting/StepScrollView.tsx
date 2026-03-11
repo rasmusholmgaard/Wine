@@ -5,6 +5,8 @@ import StepNose, { getNoseTitle } from './StepNose'
 import StepPalate, { getPalateTitle } from './StepPalate'
 import StepConclusions, { getConclusionsTitle } from './StepConclusions'
 import StepWineInfo from './StepWineInfo'
+import InfoSheet from '../primitives/InfoSheet'
+import { FIELD_HINTS } from '../../data/fieldHints'
 
 export interface StepScrollViewHandle {
   scrollNext: () => void
@@ -55,6 +57,7 @@ const StepScrollView = forwardRef<StepScrollViewHandle, StepScrollViewProps>(fun
   const questionRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const [activeIdx, setActiveIdx] = useState(0)
   const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [openHintKey, setOpenHintKey] = useState<keyof TastingNote | null>(null)
 
   // Reset scroll position before paint to prevent IntersectionObserver firing with stale position
   useLayoutEffect(() => {
@@ -188,11 +191,32 @@ const StepScrollView = forwardRef<StepScrollViewHandle, StepScrollViewProps>(fun
           >
             <h2 className="font-display text-vino-xl text-charcoal font-semibold leading-snug mb-5">
               {getTitle(fieldKey)}
+              {FIELD_HINTS[fieldKey] && (
+                <button
+                  onClick={() => setOpenHintKey(fieldKey)}
+                  className="inline-flex items-center justify-center w-7 h-7 ml-2 rounded-full bg-sage/15 text-sage hover:bg-sage/25 active:scale-95 transition-[transform,background-color] duration-150 focus-visible:outline-none align-middle -translate-y-0.5"
+                  aria-label="Info"
+                >
+                  <svg width="16" height="16" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="7.5" cy="7.5" r="6.5" />
+                    <line x1="7.5" y1="6.5" x2="7.5" y2="10.5" />
+                    <circle cx="7.5" cy="4.5" r="0.6" fill="currentColor" stroke="none" />
+                  </svg>
+                </button>
+              )}
             </h2>
             {renderField(fieldKey, makeSetField(fieldKey, idx))}
           </div>
         )
       })}
+
+      {openHintKey && FIELD_HINTS[openHintKey] && (
+        <InfoSheet
+          title={FIELD_HINTS[openHintKey]!.title}
+          body={FIELD_HINTS[openHintKey]!.body}
+          onClose={() => setOpenHintKey(null)}
+        />
+      )}
 
       {hint && (
         <div
