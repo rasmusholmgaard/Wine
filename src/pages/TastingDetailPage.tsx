@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Camera, EyeOff, Home, Loader2, Trash2, X } from 'lucide-react'
+import { ArrowLeft, Camera, Check, EyeOff, Home, Loader2, Trash2, X } from 'lucide-react'
 import AppShell from '../components/layout/AppShell'
 import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
@@ -22,15 +22,24 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-function Row({ label, value }: { label: string; value?: string | string[] | number | null | boolean }) {
+function Row({ label, value, match }: { label: string; value?: string | string[] | number | null | boolean; match?: boolean | null }) {
   if (value == null || value === '' || (Array.isArray(value) && value.length === 0)) return null
   const display = Array.isArray(value) ? value.join(', ') : String(value)
   return (
-    <div className="flex justify-between gap-4">
+    <div className="flex justify-between gap-4 items-center">
       <span className="text-vino-sm text-charcoal-soft font-body flex-shrink-0">{label}</span>
-      <span className="text-vino-sm text-charcoal font-body text-right">{display}</span>
+      <div className="flex items-center gap-1">
+        <span className={`text-vino-sm font-body text-right ${match === true ? 'text-sage' : match === false ? 'text-wine-red' : 'text-charcoal'}`}>{display}</span>
+        {match === true && <Check size={13} className="text-sage flex-shrink-0" strokeWidth={2.5} />}
+        {match === false && <X size={13} className="text-wine-red flex-shrink-0" strokeWidth={2.5} />}
+      </div>
     </div>
   )
+}
+
+function guessMatch(guess?: string | null, actual?: string | null): boolean | null {
+  if (!guess || !actual) return null
+  return guess.toLowerCase().trim() === actual.toLowerCase().trim()
 }
 
 function formatDate(iso: string) {
@@ -151,11 +160,15 @@ export default function TastingDetailPage() {
 
   const dotColor = getColorDot(tasting.color, tasting.wineType)
 
+  const isBlind = tasting.mode === 'blind'
+
   const title = tasting.wineName
     ? tasting.wineName
-    : tasting.grapeGuess || 'Blind smagning'
+    : isBlind
+    ? tasting.grapeGuess || 'Blind smagning'
+    : 'Ukendt vin'
 
-  const hasReveal = tasting.wineName || tasting.producer || tasting.vintage
+  const hasWineInfo = !!(tasting.wineName || tasting.wineGrape || tasting.producer || tasting.vintage || tasting.wineCountry || tasting.wineRegion)
 
   return (
     <AppShell>
@@ -200,15 +213,17 @@ export default function TastingDetailPage() {
               <p className="text-vino-base text-charcoal-mid font-body mt-0.5">{tasting.producer}</p>
             )}
             <div className="flex items-center gap-2 mt-2">
-              <span
-                className={cn(
-                  'inline-flex items-center gap-1 text-vino-xs font-body font-medium px-2 py-1 rounded-chip',
-                  'bg-wine-red/10 text-wine-red',
-                )}
-              >
-                <EyeOff size={11} />
-                Blind
-              </span>
+              {isBlind && (
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1 text-vino-xs font-body font-medium px-2 py-1 rounded-chip',
+                    'bg-wine-red/10 text-wine-red',
+                  )}
+                >
+                  <EyeOff size={11} />
+                  Blind
+                </span>
+              )}
               {(tasting.tastingMode ?? 'advanced') === 'casual' && (
                 <span className="inline-flex items-center text-vino-xs font-body font-medium px-2 py-1 rounded-chip bg-sage/15 text-sage">
                   Casual
@@ -268,24 +283,29 @@ export default function TastingDetailPage() {
           <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
         </div>
 
-        {/* Revealed wine info (blind tasting only) */}
-        {hasReveal && (
-          <Section title="🏷️ Afsløring">
+        {/* Wine info */}
+        {hasWineInfo && (
+          <Section title={isBlind ? '🏷️ Afsløring' : 'Vin info'}>
             <Row label="Vin" value={tasting.wineName} />
             <Row label="Producent" value={tasting.producer} />
+            <Row label="Drue" value={tasting.wineGrape} />
             <Row label="Årgang" value={tasting.vintage} />
+            <Row label="Land" value={tasting.wineCountry} />
+            <Row label="Region" value={tasting.wineRegion} />
           </Section>
         )}
 
-        {/* Conclusions */}
-        <Section title="Konklusion">
-          <Row label="Drue" value={tasting.grapeGuess} />
-          <Row label="Land" value={tasting.countryGuess} />
-          <Row label="Region" value={tasting.regionGuess} />
-          {!tasting.vintage && <Row label="Årgangsgæt" value={tasting.vintageEstimate} />}
-          <Row label="Klima" value={tasting.climate} />
-          <Row label="Kvalitet" value={tasting.qualityLevel} />
-        </Section>
+        {/* Conclusions (blind only) */}
+        {isBlind && (
+          <Section title="Konklusion">
+            <Row label="Drue" value={tasting.grapeGuess} match={guessMatch(tasting.grapeGuess, tasting.wineGrape)} />
+            <Row label="Land" value={tasting.countryGuess} match={guessMatch(tasting.countryGuess, tasting.wineCountry)} />
+            <Row label="Region" value={tasting.regionGuess} match={guessMatch(tasting.regionGuess, tasting.wineRegion)} />
+            {!tasting.vintage && <Row label="Årgangsgæt" value={tasting.vintageEstimate} />}
+            <Row label="Klima" value={tasting.climate} />
+            <Row label="Kvalitet" value={tasting.qualityLevel} />
+          </Section>
+        )}
 
         {/* Personal notes */}
         {tasting.personalNotes && (
